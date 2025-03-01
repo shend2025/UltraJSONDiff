@@ -1,0 +1,180 @@
+{
+  "user": {
+    "name": "John Doe",
+    "age": 30,
+    "isStudent": false,
+    "email": "johndoe@example.com",
+    "address": {
+      "street": "123 Main St",
+      "city": "Anytown",
+      "state": "CA",
+      "postalCode": "12345"
+    },
+    "escapeKey": "{\"name\":\"John Doe\",\"age\":30,\"isStudent\":false,\"email\":\"johndoe@example.com\"}",
+    "location": {
+      "x": 37.7749001,
+      "y": -122.4194
+    },
+    "position": "-300.0,-250.0",
+    "hobbies": [
+      "reading",
+      "swimming",
+      "cycling"
+    ],
+    "friends": [
+      {
+        "name": "Jane Smith",
+        "age": 28,
+        "email": "janesmith@example.com"
+      },
+      {
+        "name": "Bob Johnson",
+        "age": 32,
+        "email": "bobjohnson@example.com"
+      }
+    ],
+    "queryTimestamp": 1672531200
+  },
+  "ordersStrictOrder": [
+    {
+      "orderId": 123456,
+      "product": "Smartphone",
+      "quantity": 1,
+      "price": 999.99,
+      "isDelivered": true
+    },
+    {
+      "orderId": 789012,
+      "product": "Laptop",
+      "quantity": 2,
+      "price": 1499.99,
+      "isDelivered": false
+    },
+    {
+      "orderId": 567890,
+      "product": "Tablet",
+      "quantity": 3,
+      "price": 499.99,
+      "isDelivered": true
+    },
+    {
+      "orderId": 234567,
+      "product": "Headphones",
+      "quantity": 4,
+      "price": 199.99,
+      "isDelivered": false
+    },
+    {
+      "orderId": 678901,
+      "product": "Keyboard",
+      "quantity": 1,
+      "price": 79.99,
+      "isDelivered": true
+    },
+    {
+      "orderId": 345678,
+      "product": "Mouse",
+      "quantity": 2,
+      "price": 39.99,
+      "isDelivered": false
+    },
+    {
+      "orderId": 789013,
+      "product": "External Hard Drive",
+      "quantity": 1,
+      "price": 129.99,
+      "isDelivered": true
+    },
+    {
+      "orderId": 456789,
+      "product": "Monitor",
+      "quantity": 1,
+      "price": 299.99,
+      "isDelivered": false
+    },
+    {
+      "orderId": 890123,
+      "product": "Printer",
+      "quantity": 1,
+      "price": 149.99,
+      "isDelivered": true
+    },
+    {
+      "orderId": 567891,
+      "product": "Scanner",
+      "quantity": 1,
+      "price": 99.99,
+      "isDelivered": false
+    }
+  ],
+  "ordersWithoutOrder": [
+    {
+      "product": "Smartphone",
+      "quantity": 1,
+      "price": 999.99,
+      "isDelivered": true
+    },
+    {
+      "product": "Laptop",
+      "quantity": 2,
+      "price": 1499.99,
+      "isDelivered": false
+    },
+    {
+      "product": "Tablet",
+      "quantity": 3,
+      "price": 499.99,
+      "isDelivered": true
+    },
+    {
+      "product": "Headphones",
+      "quantity": 4,
+      "price": 199.99,
+      "isDelivered": false
+    },
+    {
+      "product": "Keyboard",
+      "quantity": 1,
+      "price": 79.99,
+      "isDelivered": true
+    },
+    {
+      "product": "Mouse",
+      "quantity": 2,
+      "price": 39.99,
+      "isDelivered": false
+    },
+    {
+      "product": "External Hard Drive",
+      "quantity": 1,
+      "price": 129.99,
+      "isDelivered": true
+    },
+    {
+      "product": "Monitor",
+      "quantity": 1,
+      "price": 299.99,
+      "isDelivered": false
+    },
+    {
+      "product": "Printer",
+      "quantity": 1,
+      "price": 149.99,
+      "isDelivered": true
+    },
+    {
+      "product": "Scanner",
+      "quantity": 1,
+      "price": 99.99,
+      "isDelivered": false
+    }
+  ],
+  "settings": {
+    "theme": "dark",
+    "notifications": {
+      "email": true,
+      "sms": false
+    },
+    "language": "en"
+  }
+}

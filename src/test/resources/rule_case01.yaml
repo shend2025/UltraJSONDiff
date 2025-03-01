@@ -1,0 +1,95 @@
+# you can define multiple subRule
+- subRule:
+    jsonPath: $.user
+    extensible: true
+    strictOrder: true
+    ignoreNull: true
+    fastFail: false
+    preProcess: # TODO
+      removeNode:
+        jsonPath: ""
+      escape:
+        jsonPath: ""
+    customRules:
+      - name: NumberPrecise
+        jsonPath: "**.age"
+        param: "newScale=3,roundingMode=3"
+      - name: ArrayWithKey
+        jsonPath: "$"
+        param: "key=id"
+      - name: IngorePath  # which path will be ignored
+        param: "user.queryTimestamp"
+      - name: ArrayDisorder
+        jsonPath: "**.ordersWithoutOrder"
+      - name: ArrayRecursively
+        jsonPath:
+        param:
+      - name: DegreePrecise
+        jsonPath:
+        param: "tolerance=10e-1"
+      - name: RadianPrecise
+        jsonPath:
+        param: "tolerance=10e-4"
+      - name: TolerantValue
+        jsonPath: ""
+        param: "tolerance=10e-4"
+      - name: PercentTolerant
+        jsonPath: ""
+        param: "tolerance=10e-4"
+      - name: ImprecisePosition #eg： {"position": "-300.0,-250.0"}
+        jsonPath: ""
+        param: "tolerance=0.01;separator=,"
+
+- subRule:
+    jsonPath: $.ordersStrictOrder
+    extensible: true
+    strictOrder: true
+    ignoreNull: true
+    fastFail: false
+    preProcess: # TODO
+      removeNode:
+        jsonPath: ""
+      escape:
+        jsonPath: ""
+    customRules:
+      - name: ArrayWithKey
+        jsonPath: "$"
+        param: "key=orderId"
+      - name: NumberPrecise
+        jsonPath: "**user.age"
+        param: "newScale=3,roundingMode=3"
+- subRule:
+    jsonPath: $.ordersWithoutOrder
+    extensible: true
+    strictOrder: false
+    ignoreNull: true
+    fastFail: false
+    preProcess: # TODO
+      removeNode:
+        jsonPath: ""
+      escape:
+        jsonPath: ""
+    customRules:
+      - name: ArrayDisorder
+        jsonPath: "$"
+      - name: NumberPrecise
+        jsonPath: "**user.age"
+        param: "newScale=3,roundingMode=3"
+
+# as enum value
+- ruleType:
+  - IngorePath
+  - ArrayWithKey
+  - NumberPrecise
+  - EscapedJson
+  - ArrayInOrder
+  - ArrayLength
+  - DegreePrecise
+  - RadianPrecise
+  - ArrayDisorder
+  - ArrayRecursively
+  - TolerantValue
+  - PercentTolerant
+  - ImprecisePosition
+  - EmptyValue
+
