@@ -16,8 +16,8 @@
 package jsondiff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nezha.jsondiff.JSONCompare;
-import com.nezha.jsondiff.JSONCompareResult;
+import org.testtools.jsondiff.JSONCompare;
+import org.testtools.jsondiff.JSONCompareResult;
 import org.junit.Test;
 
 import java.io.File;
