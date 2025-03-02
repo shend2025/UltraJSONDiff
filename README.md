@@ -1,5 +1,5 @@
 # What's this UJD(UtraJSONDiff)
-* A powerful jsondiff tool for develop and test engineer
+* A powerful jsondiff tool for developer and test engineer
 * rewrite some modules of https://github.com/skyscreamer/JSONassert
 * skyscreamer/JSONassert is a tool for Assert but UtraJSONDiff experts in JSONDiff
 1. yaml file to define diff rules
