@@ -69,6 +69,7 @@ The following example demonstrates how to configure a subRule for comparing JSON
       - name: ImprecisePosition
         jsonPath: ""
         param: "tolerance=0.01;separator=,"
+```
 
 ### Configuration Parameters Explained
 
