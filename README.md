@@ -29,9 +29,6 @@ The following example demonstrates how to configure a subRule for comparing JSON
       # Remove specific nodes from JSON before comparison
       removeNode:
         jsonPath: ""
-      # Escape special characters in JSON values
-      escape:
-        jsonPath: ""
     # Custom comparison rules to apply to this JSONPath
     customRules:
       # Apply number precision comparison to all age fields (3 decimal places, rounding mode 3)
@@ -80,7 +77,7 @@ The following example demonstrates how to configure a subRule for comparing JSON
 - **strictOrder**: When `true`, arrays must be in the exact same order; when `false`, array elements can be reordered
 - **ignoreNull**: When `true`, null values are ignored during comparison
 - **fastFail**: When `true`, comparison stops immediately when the first difference is found
-- **preProcess**: Pre-processing options for removing nodes or escaping characters before comparison
+- **preProcess**: Pre-processing options for removing nodes before comparison
 - **customRules**: Array of custom comparison rules with specific behaviors:
   - **NumberPrecise**: Compares numbers with specified precision and rounding mode
   - **ArrayWithKey**: Compares arrays using a specific key field for element matching

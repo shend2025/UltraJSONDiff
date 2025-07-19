@@ -27,14 +27,14 @@ public class FileUtil {
     }
 
     /**
-     * 读取文件内容
-     * @param fileName 文件路径，可以是相对路径或绝对路径
-     * @return 文件内容字符串
+     * Read file content
+     * @param fileName File path, can be relative path or absolute path
+     * @return File content string
      */
     public static String readFile(String fileName) {
         try{
             String path;
-            // 如果是绝对路径，直接使用；否则拼接工作目录
+            // If it's an absolute path, use it directly; otherwise concatenate with working directory
             if (new File(fileName).isAbsolute()) {
                 path = fileName;
             } else {
@@ -45,11 +45,10 @@ public class FileUtil {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
             String line;
-//            System.out.println("Reading text file using FileReader");
+
             StringBuffer sb = new StringBuffer();
             while((line = br.readLine()) != null){
-                //逐行读取
-//                System.out.println(line);
+
                 sb.append(line).append("\n");
             }
             br.close();
@@ -62,9 +61,9 @@ public class FileUtil {
     }
 
     /**
-     * 获取文件的绝对路径
-     * @param filePath 文件路径，可以是相对路径或绝对路径
-     * @return 文件的绝对路径
+     * Get the absolute path of the file
+     * @param filePath File path, can be relative path or absolute path
+     * @return The absolute path of the file
      */
     public static String getAbsolutePath(String filePath) {
         File file = new File(filePath);
@@ -76,9 +75,9 @@ public class FileUtil {
     }
 
     /**
-     * 检查文件是否存在
-     * @param filePath 文件路径
-     * @return 如果文件存在返回true，否则返回false
+     * Check if the file exists
+     * @param filePath File path
+     * @return Returns true if the file exists, otherwise returns false
      */
     public static boolean fileExists(String filePath) {
         String path;
@@ -91,9 +90,9 @@ public class FileUtil {
     }
 
     /**
-     * 获取文件所在目录的绝对路径
-     * @param filePath 文件路径
-     * @return 文件所在目录的绝对路径
+     * Get the absolute path of the directory containing the file
+     * @param filePath File path
+     * @return The absolute path of the directory containing the file
      */
     public static String getParentPath(String filePath) {
         return new File(getAbsolutePath(filePath)).getParent();

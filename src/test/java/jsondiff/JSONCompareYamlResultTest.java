@@ -49,11 +49,6 @@ public class JSONCompareYamlResultTest {
         createOutputDirectory();
     }
 
-    @After
-    public void tearDown() {
-        // Clean up test output files (optional)
-        // cleanupTestOutput();
-    }
 
     /**
      * Run the specified test case
@@ -64,8 +59,8 @@ public class JSONCompareYamlResultTest {
         System.out.println("=== Starting test case execution: case_" + caseNumber + " ===");
         
         // Build file paths
-        String expectedJsonPath = TEST_RESOURCES_PATH + "case_" + caseNumber + "_a.json";
-        String actualJsonPath = TEST_RESOURCES_PATH + "case_" + caseNumber + "_e.json";
+        String expectedJsonPath = TEST_RESOURCES_PATH + "case_" + caseNumber + "_e.json";
+        String actualJsonPath = TEST_RESOURCES_PATH + "case_" + caseNumber + "_a.json";
         String rulesPath = TEST_RESOURCES_PATH + "rule_case" + caseNumber + ".yaml";
         String expectedResultPath = TEST_RESOURCES_PATH + "case_" + caseNumber + "_result.json";
         String outputFilePath = OUTPUT_PATH + "case_" + caseNumber + "_diff.json";
@@ -87,11 +82,7 @@ public class JSONCompareYamlResultTest {
 
         // Execute JSON comparison
         System.out.println("Starting JSON comparison...");
-        JSONCompareResult result = JSONCompare.compareJSONYaml(expectedJSON, actualJSON, rules);
-        
-        if (result == null) {
-            fail("JSON comparison returned null result");
-        }
+        JSONCompareResult result = JSONCompare.compareJSON(expectedJSON, actualJSON, rules);
 
         // Serialize comparison result
         String actualResult = objectMapper.writeValueAsString(result.getFailure());
@@ -244,7 +235,7 @@ public class JSONCompareYamlResultTest {
         String actualJSON = "{\"name\":\"John\",\"age\":30}";
         String rules = "[]";
 
-        JSONCompareResult result = JSONCompare.compareJSONYaml(expectedJSON, actualJSON, rules);
+        JSONCompareResult result = JSONCompare.compareJSON(expectedJSON, actualJSON, rules);
         assertNotNull("Comparison result should not be null", result);
         assertTrue("Identical JSON should compare successfully", result.getFailure().isEmpty());
     }

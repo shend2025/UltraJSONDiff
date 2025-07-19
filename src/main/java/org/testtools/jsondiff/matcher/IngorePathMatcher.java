@@ -18,7 +18,7 @@ import org.testtools.jsondiff.CompareContext;
 
 /**
  * Function: 
- *
+ *  Ignore specific paths during comparison
  *  
  */
 public class IngorePathMatcher<T> implements ValueMatcher<T> {

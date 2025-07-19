@@ -43,7 +43,6 @@ public class EscapedJsonMatcher<T> implements CustomValueMatcher<T> {
         return false;
     }
 
-    public void EscapedJsonMatcher(){}
 
     @Override
     public boolean equal(String prefix, T actual, T expected, JSONCompareDetailResult result, JSONComparator comparator) {

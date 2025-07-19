@@ -17,4 +17,17 @@ package org.testtools.jsondiff;
 public class PreProcessItem {
     String path;
     String action;
+    //增加get set方法
+    public String getPath() {
+        return path;
+    }
+    public void setPath(String path) {
+        this.path = path;
+    }
+    public String getAction() {
+        return action;
+    }
+    public void setAction(String action) {
+        this.action = action;
+    }
 }

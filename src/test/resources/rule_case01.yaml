@@ -10,13 +10,12 @@
     ignoreNull: true
     # Whether to stop comparison immediately when first difference is found
     fastFail: false
-    preProcess: # TODO
+    preProcess:
       # Remove specific nodes from JSON before comparison
       removeNode:
         jsonPath: ""
-      # Escape special characters in JSON values
-      escape:
-        jsonPath: ""
+      removeNode:
+        jsonPath: ""  
     # Custom comparison rules to apply to this JSONPath
     customRules:
       # Apply number precision comparison to all age fields (3 decimal places, rounding mode 3)

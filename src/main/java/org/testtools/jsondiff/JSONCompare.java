@@ -20,6 +20,7 @@ import com.jayway.jsonpath.JsonPath;
 import org.testtools.jsondiff.comparator.CustomComparator;
 import org.testtools.jsondiff.comparator.DefaultComparator;
 import org.testtools.jsondiff.comparator.JSONComparator;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,9 +29,7 @@ import org.json.JSONString;
 import java.util.List;
 
 /**
- * Provides API to compare two JSON entities.  but it can
- * be programmed against directly to access the functionality.  (eg, to make something that works with a
- * non-JUnit test framework)
+ * Provides API to compare two JSON entities using YAML configuration.
  */
 public final class JSONCompare {
     private JSONCompare() {
@@ -51,16 +50,16 @@ public final class JSONCompare {
      * @throws JSONException            JSON parsing error
      * @throws IllegalArgumentException when type of expectedStr doesn't match the type of actualStr
      */
-    public static JSONCompareDetailResult compareJSON(String expectedStr, String actualStr, JSONComparator comparator)
+    public static JSONCompareDetailResult compareJSONInternal(String expectedStr, String actualStr, JSONComparator comparator)
             throws JSONException {
         Object expected = JSONParser.parseJSON(expectedStr);
         Object actual = JSONParser.parseJSON(actualStr);
         if ((expected instanceof JSONObject) && (actual instanceof JSONObject)) {
-            return compareJSON((JSONObject) expected, (JSONObject) actual, comparator);
+            return compareJSONInternal((JSONObject) expected, (JSONObject) actual, comparator);
         } else if ((expected instanceof JSONArray) && (actual instanceof JSONArray)) {
-            return compareJSON((JSONArray) expected, (JSONArray) actual, comparator);
+            return compareJSONInternal((JSONArray) expected, (JSONArray) actual, comparator);
         } else if (expected instanceof JSONString && actual instanceof JSONString) {
-            return compareJson((JSONString) expected, (JSONString) actual);
+            return compareJSONInternal((JSONString) expected, (JSONString) actual);
         } else if (expected instanceof JSONObject) {
             return new JSONCompareDetailResult().fail("", expected, actual);
         } else {
@@ -78,7 +77,7 @@ public final class JSONCompare {
      * @return result of the comparison
      * @throws JSONException JSON parsing error
      */
-    public static JSONCompareDetailResult compareJSON(JSONObject expected, JSONObject actual, JSONComparator comparator)
+    public static JSONCompareDetailResult compareJSONInternal(JSONObject expected, JSONObject actual, JSONComparator comparator)
             throws JSONException {
         return comparator.compareJSON(expected, actual);
     }
@@ -93,7 +92,7 @@ public final class JSONCompare {
      * @return result of the comparison
      * @throws JSONException JSON parsing error
      */
-    public static JSONCompareDetailResult compareJSON(JSONArray expected, JSONArray actual, JSONComparator comparator)
+    public static JSONCompareDetailResult compareJSONInternal(JSONArray expected, JSONArray actual, JSONComparator comparator)
             throws JSONException {
         return comparator.compareJSON(expected, actual);
     }
@@ -106,7 +105,7 @@ public final class JSONCompare {
      * @param actual   {@code JSONstring} to compare
      * @return result of the comparison
      */
-    public static JSONCompareDetailResult compareJson(final JSONString expected, final JSONString actual) {
+    public static JSONCompareDetailResult compareJSONInternal(final JSONString expected, final JSONString actual) {
         final JSONCompareDetailResult result = new JSONCompareDetailResult();
         final String expectedJson = expected.toJSONString();
         final String actualJson = actual.toJSONString();
@@ -125,9 +124,9 @@ public final class JSONCompare {
      * @return result of the comparison
      * @throws JSONException JSON parsing error
      */
-    public static JSONCompareDetailResult compareJSON(String expectedStr, String actualStr, CompareContext mode)
+    public static JSONCompareDetailResult compareJSONInternal(String expectedStr, String actualStr, CompareContext mode)
             throws JSONException {
-        return compareJSON(expectedStr, actualStr, getComparatorForMode(mode));
+        return compareJSONInternal(expectedStr, actualStr, getComparatorForMode(mode));
     }
 
     /**
@@ -139,11 +138,10 @@ public final class JSONCompare {
      * @return result of the comparison
      * @throws JSONException JSON parsing error
      */
-    public static JSONCompareDetailResult compareJSON(JSONObject expected, JSONObject actual, CompareContext mode)
+    public static JSONCompareDetailResult compareJSONInternal(JSONObject expected, JSONObject actual, CompareContext mode)
             throws JSONException {
-        return compareJSON(expected, actual, getComparatorForMode(mode));
+        return compareJSONInternal(expected, actual, getComparatorForMode(mode));
     }
-
 
     /**
      * Compares JSONArray provided to the expected JSONArray, and returns the results of the comparison.
@@ -154,41 +152,32 @@ public final class JSONCompare {
      * @return result of the comparison
      * @throws JSONException JSON parsing error
      */
-    public static JSONCompareDetailResult compareJSON(JSONArray expected, JSONArray actual, CompareContext mode)
+    public static JSONCompareDetailResult compareJSONInternal(JSONArray expected, JSONArray actual, CompareContext mode)
             throws JSONException {
-        return compareJSON(expected, actual, getComparatorForMode(mode));
+        return compareJSONInternal(expected, actual, getComparatorForMode(mode));
     }
-
 
     /**
-     * Compares JSONArray provided to the expected JSONArray, and returns the results of the comparison.
+     * Compares JSON using YAML configuration rules.
      *
-     * @param expectedStr  Expected JSON string
-     * @param actualStr    JSON string to compare
-     * @param compareRules Compare rules in JSON string
+     * @param expectedStr Expected JSON string
+     * @param actualStr   JSON string to compare
+     * @param yamlRule    YAML configuration string containing comparison rules
      * @return result of the comparison
-     * @throws JSONException JSON parsing error
+     * @throws Exception if YAML parsing or comparison fails
      */
-    public static JSONCompareSimpleResult compareJSONSimple(String expectedStr, String actualStr,
-                                                            String compareRules)
-            throws JSONException {
-        CustomComparator comparator = CompareRulesTransformer.getComparator(compareRules);
-        return compareJSONSimple(expectedStr, actualStr, comparator);
-    }
-
-
-    public static JSONCompareResult compareJSONYaml(String expectedStr, String actualStr, String yamlRule)
+    public static JSONCompareResult compareJSON(String expectedStr, String actualStr, String yamlRule)
             throws Exception {
         JSONCompareConf yamlRuleObj = new JSONCompareConf();
         yamlRuleObj.readNodeFromYaml(yamlRule);
         List<CompareRule> compareRules = yamlRuleObj.getCompareRules();
 
         JSONCompareResult result = new JSONCompareResult();
-        // 解析 JSON 字符串
+        // Parse JSON strings
         DocumentContext contextExpect = JsonPath.parse(expectedStr);
         DocumentContext contextActual = JsonPath.parse(actualStr);
 
-        // 使用路径表达式读取值
+        // Use path expressions to read values
         String expectedByJsonPath = expectedStr;
         String actualByJsonPath = actualStr;
 
@@ -198,67 +187,62 @@ public final class JSONCompare {
                 ObjectMapper objectMapper = new ObjectMapper();
                 expectedByJsonPath = objectMapper.writeValueAsString(contextExpect.read(compareRule.getJsonPath()));
                 actualByJsonPath = objectMapper.writeValueAsString(contextActual.read(compareRule.getJsonPath()));
+                //If compareRule has preprocess and removeNode's jsonPath is not empty, perform preprocessing first
+                if (compareRule.getPreProcesses() != null){
+                    for (PreProcessItem preProcess : compareRule.getPreProcesses()) {
+                        if ("removeNode".equals(preProcess.getAction())  && !StringUtils.isEmpty(preProcess.getPath())) {
+                            expectedByJsonPath = removeNode(expectedByJsonPath, preProcess.getPath());
+                            actualByJsonPath = removeNode(actualByJsonPath, preProcess.getPath());
+                        }
+                    }
+                }
             }
 
             try {
-                JSONCompareSimpleResult compareSimpleResult = compareJSONSimpleYaml(expectedByJsonPath, actualByJsonPath, comparator);
+                JSONCompareSimpleResult compareSimpleResult = compareJSONComparator(expectedByJsonPath, actualByJsonPath, comparator);
                 result.addFailures(compareSimpleResult.getFailure());
             } catch (JSONException e) {
                 FailureField failureField = new FailureField("", "", compareRule.getJsonPath(), e.getMessage());
                 result.addFailure(failureField);
             }
-
         }
         return result;
     }
 
-    public static JSONCompareDeepDetailResult compareJSONDeep(String expectedStr, String actualStr,
-                                                              JSONComparator comparator)
-            throws JSONException {
-        Object expected = JSONParser.parseJSON(expectedStr);
-        Object actual = JSONParser.parseJSON(actualStr);
-        JSONCompareDeepDetailResult result;
-        if ((expected instanceof JSONObject) && (actual instanceof JSONObject)) {
-            result = new JSONCompareDeepDetailResult(compareJSON((JSONObject) expected,
-                    (JSONObject) actual, comparator));
-        } else if ((expected instanceof JSONArray) && (actual instanceof JSONArray)) {
-            result = new JSONCompareDeepDetailResult(compareJSON((JSONArray) expected, (JSONArray) actual
-                    , comparator));
-        } else if (expected instanceof JSONString && actual instanceof JSONString) {
-            result = new JSONCompareDeepDetailResult(compareJson((JSONString) expected,
-                    (JSONString) actual));
-        } else {
-            result = new JSONCompareDeepDetailResult();
-            result.fail("", expected, actual);
-            return result;
-        }
-        JSONCompareResultUtil.getAbsolutePath(expected, actual, result);
-        return result;
-    }
 
-
-    public static JSONCompareSimpleResult compareJSONSimpleYaml(String expectedStr, String actualStr, CustomComparator comparator)
-            throws JSONException {
-        return compareJSONSimple(expectedStr, actualStr, comparator);
-    }
-
-    public static JSONCompareSimpleResult compareJSONSimple(String expectedStr, String actualStr,
+    /**
+     * Compares JSON string provided to the expected JSON string using provided comparator, and returns the results of
+     * the comparison.
+     *
+     * @param expectedStr Expected JSON string
+     * @param actualStr   JSON string to compare
+     * @param comparator  Comparator to use
+     * @return result of the comparison
+     * @throws JSONException JSON parsing error
+     */
+    public static JSONCompareSimpleResult compareJSONComparator(String expectedStr, String actualStr,
                                                             JSONComparator comparator)
             throws JSONException {
         Object expected = JSONParser.parseJSON(expectedStr);
         Object actual = JSONParser.parseJSON(actualStr);
         JSONCompareDetailResult result;
         if ((expected instanceof JSONObject) && (actual instanceof JSONObject)) {
-            result = compareJSON((JSONObject) expected, (JSONObject) actual, comparator);
+            result = compareJSONInternal((JSONObject) expected, (JSONObject) actual, comparator);
         } else if ((expected instanceof JSONArray) && (actual instanceof JSONArray)) {
-            result = compareJSON((JSONArray) expected, (JSONArray) actual, comparator);
+            result = compareJSONInternal((JSONArray) expected, (JSONArray) actual, comparator);
         } else if (expected instanceof JSONString && actual instanceof JSONString) {
-            result = compareJson((JSONString) expected, (JSONString) actual);
+            result = compareJSONInternal((JSONString) expected, (JSONString) actual);
         } else {
             result = new JSONCompareDetailResult();
             result.fail("", expected, actual);
         }
-        JSONCompareSimpleResult simpleResult = JSONCompareResultUtil.getSimpleResult(result);
-        return simpleResult;
+        return JSONCompareResultUtil.getSimpleResult(result);
+    }
+
+    //Add preprocess method to preprocess json, remove corresponding nodes, and return new json
+    public static String removeNode(String json, String jsonPath) {
+        DocumentContext context = JsonPath.parse(json);
+        context.delete(jsonPath);
+        return context.jsonString();
     }
 }
