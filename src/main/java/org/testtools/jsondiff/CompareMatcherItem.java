@@ -1,27 +1,22 @@
 package org.testtools.jsondiff;
 
-import java.util.Map;
-
 public class CompareMatcherItem {
     private String name;
     private String jsonPath;
     private String param;
-    private Map<String, String> pararms;
 
-    //创建构造函数
     public CompareMatcherItem(String name, String jsonPath, String param) {
         this.name = name;
         this.jsonPath = jsonPath;
         this.param = param;
     }
 
-    // Getter and Setter for path
     public String getJsonPath() {
         return jsonPath;
     }
 
-    public void setJsonPath(String path) {
-        this.jsonPath = path;
+    public void setJsonPath(String jsonPath) {
+        this.jsonPath = jsonPath;
     }
 
     public String getName() {
@@ -33,7 +28,7 @@ public class CompareMatcherItem {
     }
 
     public String getParam() {
-        return this.param;
+        return param;
     }
 
     public void setParam(String param) {

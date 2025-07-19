@@ -20,77 +20,95 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Configuration class for JSON comparison rules loaded from YAML.
+ * Handles parsing YAML configuration and converting it to CompareRule objects.
+ */
 public class JSONCompareConf {
-    List<Map<String, Object>> yamlData = new ArrayList<Map<String, Object>>();
-    List<CompareRule> compareRules = new ArrayList<CompareRule>();
+    
+    private final List<Map<String, Object>> yamlData = new ArrayList<>();
+    private final List<CompareRule> compareRules = new ArrayList<>();
 
-    private static void processSubRule(Map<String, Object> subRule) {
-        String forPath = (String) subRule.get("forPath");
-        String type = (String) subRule.get("type");
-        List<Map<String, Object>> customRules = (List<Map<String, Object>>) subRule.get("customRules");
-        Map<String, Object> preProcess = (Map<String, Object>) subRule.get("preProcess");
-        Map<String, Object> postProcess = (Map<String, Object>) subRule.get("postProcess");
+    /**
+     * Gets the parsed YAML data.
+     * 
+     * @return List of parsed YAML data as maps
+     */
+    public List<Map<String, Object>> getYamlData() {
+        return new ArrayList<>(yamlData);
+    }
 
-        System.out.println("forPath: " + forPath);
-        System.out.println("type: " + type);
+    /**
+     * Gets the converted comparison rules.
+     * 
+     * @return List of CompareRule objects
+     */
+    public List<CompareRule> getCompareRules() {
+        return new ArrayList<>(compareRules);
+    }
 
-        System.out.println("Custom Rules:");
-        for (Map<String, Object> rule : customRules) {
-            for (Map.Entry<String, Object> entry : rule.entrySet()) {
-                System.out.println("  Rule Type: " + entry.getKey());
-                Map<String, Object> ruleDetails = (Map<String, Object>) entry.getValue();
-                for (Map.Entry<String, Object> detail : ruleDetails.entrySet()) {
-                    System.out.println("    " + detail.getKey() + ": " + detail.getValue());
+    /**
+     * Reads and parses YAML configuration from a string.
+     * 
+     * @param yamlString The YAML configuration string
+     * @throws IllegalArgumentException if the YAML string is null or empty
+     * @throws RuntimeException if YAML parsing fails
+     */
+    public void readNodeFromYaml(String yamlString) {
+        validateYamlString(yamlString);
+        
+        try {
+            Yaml yaml = new Yaml();
+            List<Map<String, Object>> parsedData = yaml.load(yamlString);
+            
+            if (parsedData == null) {
+                throw new RuntimeException("YAML parsing resulted in null data");
+            }
+            
+            yamlData.clear();
+            yamlData.addAll(parsedData);
+            
+            convertToCompareRules();
+            
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse or process YAML string", e);
+        }
+    }
+
+    /**
+     * Converts YAML data to CompareRule objects.
+     * This method processes both direct rules and sub-rules.
+     */
+    public void convertToCompareRules() {
+        compareRules.clear();
+        
+        for (Map<String, Object> rule : yamlData) {
+            if (rule == null) {
+                continue;
+            }
+            
+            // Handle sub-rule case
+            if (rule.containsKey("subRule")) {
+                Map<String, Object> subRule = (Map<String, Object>) rule.get("subRule");
+                if (subRule != null) {
+                    compareRules.add(new CompareRule(subRule));
                 }
+            } else {
+                // Handle direct rule case
+                compareRules.add(new CompareRule(rule));
             }
         }
-
-        System.out.println("Pre Process:");
-        for (Map.Entry<String, Object> entry : preProcess.entrySet()) {
-            System.out.println("  " + entry.getKey() + ": " + entry.getValue());
-        }
-
-        System.out.println("Post Process:");
-        for (Map.Entry<String, Object> entry : postProcess.entrySet()) {
-            System.out.println("  " + entry.getKey() + ": " + entry.getValue());
-        }
     }
 
-    public List<Map<String, Object>> getYamlData() {
-        return yamlData;
-    }
-
-    public void readNodeFromYaml(String yamlString) throws Exception {
-        // 验证 YAML 字符串是否为空
+    /**
+     * Validates that the YAML string is not null or empty.
+     * 
+     * @param yamlString The YAML string to validate
+     * @throws IllegalArgumentException if the string is null or empty
+     */
+    private void validateYamlString(String yamlString) {
         if (yamlString == null || yamlString.trim().isEmpty()) {
             throw new IllegalArgumentException("YAML string cannot be null or empty");
         }
-
-        try {
-            Yaml yaml = new Yaml();
-            this.yamlData = yaml.load(yamlString);
-            for (Map<String, Object> rule : this.yamlData) {
-                if (rule.containsKey("subRule")) {
-                    Map<String, Object> subRule = (Map<String, Object>) rule.get("subRule");
-                    compareRules.add(new CompareRule(subRule));
-                }
-
-            }
-
-        } catch (Exception e) {
-            throw new Exception("Failed to parse or process YAML string", e);
-        }
     }
-
-    public void convertToCompareMatcher() {
-        for (Map<String, Object> rule : yamlData) {
-            compareRules.add(new CompareRule(rule));
-        }
-    }
-
-    public List<CompareRule> getCompareRules() {
-        return compareRules;
-    }
-
-
 }

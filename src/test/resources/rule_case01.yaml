@@ -1,41 +1,59 @@
 # you can define multiple subRule
 - subRule:
+    # JSONPath expression to specify which part of the JSON to apply this rule to
     jsonPath: $.user
+    # Whether the target JSON can have additional fields not present in the expected JSON
     extensible: true
+    # Whether arrays should be compared in strict order (true) or allow reordering (false)
     strictOrder: true
+    # Whether to ignore null values during comparison
     ignoreNull: true
+    # Whether to stop comparison immediately when first difference is found
     fastFail: false
     preProcess: # TODO
+      # Remove specific nodes from JSON before comparison
       removeNode:
         jsonPath: ""
+      # Escape special characters in JSON values
       escape:
         jsonPath: ""
+    # Custom comparison rules to apply to this JSONPath
     customRules:
+      # Apply number precision comparison to all age fields (3 decimal places, rounding mode 3)
       - name: NumberPrecise
         jsonPath: "**.age"
         param: "newScale=3,roundingMode=3"
+      # Compare arrays using a specific key field for matching elements
       - name: ArrayWithKey
         jsonPath: "$"
         param: "key=id"
+      # Ignore specific paths during comparison
       - name: IngorePath  # which path will be ignored
         param: "user.queryTimestamp"
+      # Allow array elements to be in any order
       - name: ArrayDisorder
         jsonPath: "**.ordersWithoutOrder"
+      # Recursively compare array elements
       - name: ArrayRecursively
         jsonPath:
         param:
+      # Compare degree values with specified tolerance
       - name: DegreePrecise
         jsonPath:
         param: "tolerance=10e-1"
+      # Compare radian values with specified tolerance
       - name: RadianPrecise
         jsonPath:
         param: "tolerance=10e-4"
+      # Compare values with tolerance for floating point differences
       - name: TolerantValue
         jsonPath: ""
         param: "tolerance=10e-4"
+      # Compare values with percentage-based tolerance
       - name: PercentTolerant
         jsonPath: ""
         param: "tolerance=10e-4"
+      # Compare position values with tolerance (e.g., {"position": "-300.0,-250.0"})
       - name: ImprecisePosition #eg： {"position": "-300.0,-250.0"}
         jsonPath: ""
         param: "tolerance=0.01;separator=,"

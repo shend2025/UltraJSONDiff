@@ -43,9 +43,9 @@ public class TolerantValueMatcher<T> implements ValueMatcher<T> {
             return actual.equals(expected);
         }
     }
+    
     @Override
-    public void matcherInit(String param, CompareContext compareContext) {tolerance = Double.parseDouble(Objects.requireNonNull(JSONCompareUtil.getParamValue(param)));
+    public void matcherInit(String param, CompareContext compareContext) {
         tolerance = Double.parseDouble(Objects.requireNonNull(JSONCompareUtil.getParamValue(param)));
-
     }
 }
