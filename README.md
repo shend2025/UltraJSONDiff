@@ -7,6 +7,127 @@
 3. Can easily extend new comparison rules based on existing source code, Easier to rewrite and expand new rules
 4. For huge json files, such as json files over several megabytes, has better performance, with jsonpath selector to improve performance
 
+# Usage
+
+UltraJSONDiff provides a simple and powerful API for comparing JSON data using YAML configuration rules. The core method is `JSONCompare.compareJSON()`.
+
+## Basic Usage
+
+The main method for JSON comparison is:
+
+```java
+public static JSONCompareResult compareJSON(String expectedStr, String actualStr, String yamlRule) throws Exception
+```
+
+### Parameters:
+- **expectedStr**: The expected JSON string
+- **actualStr**: The actual JSON string to compare against
+- **yamlRule**: YAML configuration string containing comparison rules
+
+### Return Value:
+- **JSONCompareResult**: Object containing the comparison results and any failures
+
+## Quick Start Example
+
+Here's a simple example based on the unit test:
+
+```java
+import org.testtools.jsondiff.JSONCompare;
+import org.testtools.jsondiff.JSONCompareResult;
+
+// Test data
+String expectedJSON = "{\"name\":\"John\",\"age\":30}";
+String actualJSON = "{\"name\":\"John\",\"age\":30}";
+String rules = "[]"; // Empty rules for basic comparison
+
+// Perform comparison
+JSONCompareResult result = JSONCompare.compareJSON(expectedJSON, actualJSON, rules);
+
+// Check if comparison was successful
+if (result.getFailure().isEmpty()) {
+    System.out.println("JSON comparison successful!");
+} else {
+    System.out.println("JSON comparison failed: " + result.getFailure());
+}
+```
+
+### YAML Rules Configuration (rule_case01.yaml)
+
+```yaml
+- subRule:
+    jsonPath: $.user
+    extensible: true
+    strictOrder: true
+    ignoreNull: true
+    fastFail: false
+    customRules:
+      # Apply number precision comparison to age fields
+      - name: NumberPrecise
+        jsonPath: "**.age"
+        param: "newScale=3,roundingMode=3"
+      
+      # Ignore timestamp field during comparison
+      - name: IngorePath
+        param: "user.queryTimestamp"
+      
+      # Compare position values with tolerance
+      - name: ImprecisePosition
+        jsonPath: ""
+        param: "tolerance=0.01;separator=,"
+
+- subRule:
+    jsonPath: $.ordersStrictOrder
+    extensible: true
+    strictOrder: true
+    customRules:
+      - name: ArrayWithKey
+        jsonPath: "$"
+        param: "key=orderId"
+
+- subRule:
+    jsonPath: $.ordersWithoutOrder
+    extensible: true
+    strictOrder: false
+    customRules:
+      - name: ArrayDisorder
+        jsonPath: "$"
+```
+
+### Test Execution
+
+```java
+@Test
+public void testCase01() throws Exception {
+    // Read test files
+    String expectedJSON = readFileContent("src/test/resources/case_01_e.json");
+    String actualJSON = readFileContent("src/test/resources/case_01_a.json");
+    String rules = readFileContent("src/test/resources/rule_case01.yaml");
+    
+    // Execute comparison
+    JSONCompareResult result = JSONCompare.compareJSON(expectedJSON, actualJSON, rules);
+    
+    // Process results
+    ObjectMapper objectMapper = new ObjectMapper();
+    String actualResult = objectMapper.writeValueAsString(result.getFailure());
+    
+    // Validate - this test should pass because:
+    // 1. User data matches (with precision tolerance for location.x)
+    // 2. Timestamp is ignored
+    // 3. Position values are compared with tolerance
+    // 4. ordersStrictOrder maintains strict order
+    // 5. ordersWithoutOrder allows reordering
+    assertTrue("Comparison should succeed with configured rules", result.getFailure().isEmpty());
+}
+```
+
+### What This Test Demonstrates
+
+1. **Precision Comparison**: Location coordinates are compared with tolerance for floating-point precision
+2. **Field Ignoring**: The `queryTimestamp` field is completely ignored during comparison
+3. **Position Tolerance**: Position strings are parsed and compared with tolerance
+4. **Array Order Control**: `ordersStrictOrder` requires exact order, while `ordersWithoutOrder` allows reordering
+5. **Key-based Array Matching**: Arrays can be matched using specific key fields
+
 # Configuration Example
 
 ## SubRule Configuration
@@ -69,7 +190,6 @@ The following example demonstrates how to configure a subRule for comparing JSON
       - name: ImprecisePosition
         jsonPath: ""
         param: "tolerance=0.01;separator=,"
-```
 
 ### Configuration Parameters Explained
 
@@ -274,4 +394,28 @@ The framework automatically discovers and instantiates your matcher class using 
 - Implement the required interface methods
 
 Your custom matcher will be automatically available for use in YAML configuration files without any additional registration steps.
+
+## Summary
+
+UltraJSONDiff's `JSONCompare.compareJSON()` method provides a powerful and flexible solution for JSON comparison:
+
+### Key Features:
+- **Simple API**: Single method call with three parameters
+- **YAML Configuration**: Declarative rule definition for complex comparison scenarios
+- **Flexible Matching**: Support for tolerance, precision, array ordering, and field ignoring
+- **Extensible**: Easy to add custom comparison rules
+- **Performance**: Optimized for large JSON files with JSONPath selectors
+
+### When to Use:
+- **API Testing**: Compare API responses with expected results
+- **Data Validation**: Verify JSON data transformations
+- **Integration Testing**: Ensure data consistency across systems
+- **Regression Testing**: Detect changes in JSON output formats
+
+### Method Signature:
+```java
+public static JSONCompareResult compareJSON(String expectedStr, String actualStr, String yamlRule) throws Exception
+```
+
+This method is the core of UltraJSONDiff and provides all the functionality needed for sophisticated JSON comparison scenarios.
 
