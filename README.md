@@ -1,4 +1,4 @@
-# What's this UJD(UltraJSONDiff)
+# What's this JavaJSONDiff
 * A powerful jsondiff tool for developer and test engineer
 * rewrite some modules of https://github.com/skyscreamer/JSONassert which is a tool for Test Assert but UltraJSONDiff experts in JSONDiff
 # Core Advantages
